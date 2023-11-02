@@ -11,6 +11,7 @@ echo "grabbing public signing key..."
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
 
 echo "retrieve elasticsearch..."
+
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-amd64.deb
 
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-amd64.deb.sha512
@@ -21,7 +22,7 @@ sudo dpkg -i elasticsearch-8.10.4-amd64.deb
 
 systemctl start elasticsearch.service
 
-echo "retrieve kibana..."
+echo "retrieving kibana..."
 
 wget https://artifacts.elastic.co/downloads/kibana/kibana-8.10.4-amd64.deb
 shasum -a 512 kibana-8.10.4-amd64.deb
@@ -62,7 +63,7 @@ systemctl enable elasticsearch.service
 print_step "Step 3.2: Enabling kibana"
 systemctl enable kibana.service
 
-print_step "Step 3.3: Sending prayers to God..."
+# print_step "Step 3.3: Sending prayers to God..."
 
 print_step "Step 4: Starting services"
 systemctl start elasticsearch.service
