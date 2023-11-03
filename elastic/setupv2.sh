@@ -53,6 +53,10 @@ echo " "
 print "Generating 6-digit verification code..."
 /usr/share/kibana/bin/kibana-verification-code
 
+print "Creating enrollment token for nodes"
+echo " "
+/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
+echo " "
 
 print "DONE"
 echo "Be sure to manually config Kibana"
