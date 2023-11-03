@@ -44,13 +44,16 @@ systemctl enable elasticsearch.service
 systemctl start kibana.service
 systemctl start elasticsearch.service
 
-echo "kibana should be up on port 5601\n \nBe sure to reset password and config security"
+echo "kibana should be up on port 5601"
+echo "reset password via CLI or check temp password in unpacking step"
 print "Generating token to connect kibana..."
+echo " "
 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
-
+echo " "
 print "Generating 6-digit verification code..."
 /usr/share/kibana/bin/kibana-verification-code
 
 
 print "DONE"
 echo "Be sure to manually config Kibana"
+echo "setup fleet server and harden host machine for next step"
