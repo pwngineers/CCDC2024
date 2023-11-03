@@ -1,0 +1,62 @@
+STEP 1: Install elasticsearch on your machine by running the commands bellow
+
+=============================================================
+RPM-based system such as OpenSuSE, SLES, Centos, Red Hat, and Oracle
+
+rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-x86_64.rpm
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-x86_64.rpm.sha512
+shasum -a 512 -c elasticsearch-8.10.4-x86_64.rpm.sha512
+
+sudo rpm --install elasticsearch-8.10.4-x86_64.rpm
+=============================================================
+Windows - Install the zip file and follow instruction at 
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/zip-windows.html
+
+=============================================================
+Linux using tar.gs
+
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-linux-x86_64.tar.gz
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-8.10.4-linux-x86_64.tar.gz.sha512 
+tar -xzf elasticsearch-8.10.4-linux-x86_64.tar.gz
+cd elasticsearch-8.10.4/ 
+
+	
+expected output: elasticsearch-{version}-linux-x86_64.tar.gz: OK.
+
+==============================================================
+Debian packages
+
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-amd64.deb
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.10.4-amd64.deb.sha512
+shasum -a 512 -c elasticsearch-8.10.4-amd64.deb.sha512 
+sudo dpkg -i elasticsearch-8.10.4-amd64.deb
+==============================================================
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+STEP 2: enroll your machine by running command (put token into placeholer) 
+
+=============================================================
+RPM-based system such as OpenSuSE, SLES, Centos, Red Hat, and Oracle
+
+/usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <enrollment-token>
+=============================================================
+Windows - Install the zip file and follow instruction at 
+
+bin\elasticsearch --enrollment-token <enrollment-token>
+
+=============================================================
+Linux using tar.gs
+
+bin/elasticsearch --enrollment-token <enrollment-token>
+
+==============================================================
+Debian packages
+
+/usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <enrollment-token>
+==============================================================
+
