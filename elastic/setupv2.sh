@@ -34,7 +34,7 @@ echo "DONE!"
 print "Configuring Kibana"
 
 echo "Setting encryption key..."
-sed -i 'xpack.encryptedSavedObjects.encryptionKey: "${KEY}"' /etc/kibana/kibana.yml
+printf 'xpack.encryptedSavedObjects.encryptionKey: "${KEY}"' >> /etc/kibana/kibana.yml
 echo "DONE!"
 
 print "configuring Elastic search"
