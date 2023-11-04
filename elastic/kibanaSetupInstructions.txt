@@ -1,0 +1,11 @@
+For main kibana machine
+1. run script as sudo (watch for instructions to be run)
+2. systemctl start kibana
+   systemctl start elasticsearch
+   systemctl status ----
+3. usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+   usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic -i
+4. visit 127.0.0.1:5601 for kibana
+   usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token
+   look at status to find 6 digit code
+   credentials are elastic and the reset password
