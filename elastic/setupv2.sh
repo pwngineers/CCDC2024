@@ -6,8 +6,8 @@ print(){
 	echo "=============================================================" 
 }
 
-print "Create encyprion key"
-read -p "Input encryption key of at least 32-char (can be random): " KEY
+print "Create your encyprion key"
+read -p "Input encryption key of at least 32-char (no special char): " KEY
 echo "Encryption key recieved"
 echo "DONE!"
 
@@ -50,6 +50,7 @@ systemctl enable kibana.service
 systemctl enable elasticsearch.service
 systemctl start kibana.service
 systemctl start elasticsearch.service
+
 echo " "
 echo "kibana should be up on port 5601"
 echo "reset password via CLI or check temp password in unpacking step"
@@ -71,6 +72,9 @@ echo " "
 echo " "
 echo "DONE!"
 
-print "End Script"
+print "for temp password: /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic" 
+
+print "END SCRIPT"
+echo "built in username is 'elastic'"
 echo "Be sure to manually config Kibana"
 echo "setup fleet server and harden host machine for next step"
