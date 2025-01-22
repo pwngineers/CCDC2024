@@ -1,3 +1,12 @@
 Token: 13004da6-afa7-4fd9-b233-f6f27bce830b
 Url: https://prd-p-pgr0a.splunkcloud.com
 Logs Url: https://prd-p-pgr0a.splunkcloud.com:8088
+
+
+
+Windows install:
+1) Open powershell
+2) Run: Set-ExecutionPolicy Unrestricted
+3) Download https://github.com/pwngineers/CCDC2024/archive/refs/heads/main.zip
+4) Unzip. 
+5) Run splunk/install_windows.ps1
