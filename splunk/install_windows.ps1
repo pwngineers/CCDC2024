@@ -1,170 +1,141 @@
 <#
-.SYNOPSIS
-    Installs the Splunk Universal Forwarder on Windows using msiexec.exe.
+    .SYNOPSIS
+        Installs the Splunk Universal Forwarder on Windows silently.
 
-.DESCRIPTION
-    - Downloads or references the Splunk UF MSI.
-    - Installs Splunk Universal Forwarder silently.
-    - (Optional) Sets up basic forwarding configurations in outputs.conf.
-    - (Optional) Demonstrates how to configure HEC-based forwarding vs. TCP-based forwarding.
+    .DESCRIPTION
+        Downloads the specified Splunk Universal Forwarder MSI, then installs it
+        with optional parameters for username, password, and event log monitoring.
+        Optionally writes an outputs.conf to enable HEC forwarding using a token.
 
-.PARAMETER Token
-    Your Splunk Cloud HTTP Event Collector (HEC) token.
-
-.PARAMETER Url
-    Your Splunk Cloud base URL (for example, https://prd-p-pgr0a.splunkcloud.com).
-
-.PARAMETER LogsUrl
-    Your Splunk Cloud HEC endpoint (for example, https://prd-p-pgr0a.splunkcloud.com:8088).
-
-.EXAMPLE
-    .\Install-SplunkUF.ps1 -Token "13004da6-..." -Url "https://prd-p-pgr0a.splunkcloud.com" -LogsUrl "https://prd-p-pgr0a.splunkcloud.com:8088"
+    .NOTES
+        Run this script in a PowerShell console **as Administrator**.
+        Adjust paths and credentials to match your environment.
 #>
 
+[CmdletBinding()]
 param(
-    [string]$Token = "13004da6-afa7-4fd9-b233-f6f27bce830b",
-    [string]$Url   = "https://prd-p-pgr0a.splunkcloud.com",
-    [string]$LogsUrl = "https://prd-p-pgr0a.splunkcloud.com:8088"
-)
-
-###############################################################################
-# 1. Define local variables
-###############################################################################
-# Change these as appropriate for your environment
-$MsiPath        = "C:\Temp\splunkforwarder-9.x.x64.msi"  # Path to the UF MSI you downloaded
-$InstallLogFile = "C:\Temp\splunkUFInstall.log"
-$SplunkHome     = "C:\Program Files\SplunkUniversalForwarder"
-# If your system is 32-bit or you installed to a custom path, adjust accordingly.
-
-###############################################################################
-# 2. (Optional) Download the UF MSI (if not already downloaded)
-###############################################################################
-# Example using Invoke-WebRequest if you needed to pull from a direct download URL:
-# $downloadUrl = "https://download.splunk.com/products/universalforwarder/releases/9.x.x/windows/splunkforwarder-9.x.x-xxxxxx-x64-release.msi"
-# Write-Host "Downloading Splunk Universal Forwarder MSI..."
-# Invoke-WebRequest -Uri $downloadUrl -OutFile $MsiPath
-
-###############################################################################
-# 3. Install the Universal Forwarder using msiexec
-###############################################################################
-Write-Host "Installing Splunk Universal Forwarder silently..."
-
-# Here we do a silent install, agree to the license, and do NOT define special
-# user credentials (so Splunk runs as Local System). Adjust flags as needed:
-#   - If you want an admin username/password for the UF itself, add:
-#       SPLUNKUSERNAME=<user> SPLUNKPASSWORD=<password>
-#   - If you want the forwarder to run as a domain account, add:
-#       LOGON_USERNAME="DOMAIN\username" LOGON_PASSWORD="secret" 
-#   - If you want to define a receiving indexer or deployment server directly, 
-#     add, for example: RECEIVING_INDEXER="myIndexer:9997" or DEPLOYMENT_SERVER="myDS:8089"
-#
-# For complete flags reference, see:
-#   https://docs.splunk.com/Documentation/Forwarder/latest/Forwarder/Installanuniversalforwarderfromthecommandline
-
-$arguments = @(
-    "/i `"$MsiPath`"",            # /i = install
-    "AGREETOLICENSE=Yes",         # Accept license
-    "/quiet",                     # Silent mode
-    "/L*v `"$InstallLogFile`""    # Log everything to this file
-)
-
-Start-Process "msiexec.exe" -Wait -ArgumentList $arguments
-Write-Host "`n----- Splunk UF Installation Complete -----`n"
-
-###############################################################################
-# 4. (Optional) Create or modify outputs.conf for HEC or standard TCP forwarding
-###############################################################################
-# By default, Splunk forwards over TCP (9997) to Splunk Enterprise or Splunk Cloud.
-# You gave a token (HEC) and LogsUrl(8088), which suggests you might want to forward
-# data via HTTP Event Collector. This is less common for a universal forwarder, but
-# here's an example of how it could be done.
-
-#    A) For typical Splunk Cloud forwarding (TCP:9997) via outputs.conf:
-#       (Requires your Splunk Cloud’s forwarder ingestion endpoint—something like "input-prd-p-pgr0a.cloud.splunk.com:9997")
-#
-#    B) For HEC-based forwarding, you’d set up an httpout stanza in outputs.conf,
-#       as shown below. The universal forwarder can forward via HEC, but it’s more
-#       typical to use the built-in forwarder-to-indexer approach. If you truly need
-#       HEC, see Splunk Docs for "Configure forwarders with httpout" references.
-#
-
-# Path to the local Splunk config directory
-$LocalConfigPath = Join-Path $SplunkHome "etc\system\local"
-if (-Not (Test-Path $LocalConfigPath)) {
-    Write-Warning "Splunk UF does not appear to be installed at $SplunkHome. Skipping config creation."
-    return
-}
-
-# Example outputs.conf content for HEC-based forwarding:
-# (Uncomment to enable)
-# $outputsConfContent = @"
-# [httpout]
-# defaultGroup=my_hec_group
-#
-# [httpout:my_hec_group]
-# server=${LogsUrl}  ; # e.g. https://prd-p-pgr0a.splunkcloud.com:8088
-# httpEventCollectorToken=${Token}
-# skipCertificateValidation=true
-#"@
-
-# Example outputs.conf content for standard TCP forwarding to Splunk Cloud:
-# (Replace <your-cloud-host>:9997 with your actual forwarder ingestion endpoint)
-$outputsConfContent = @"
-[tcpout]
-defaultGroup = splunkcloud-group
-
-[tcpout:splunkcloud-group]
-server = prd-p-pgr0a.splunkcloud.com:9997
-sslVerifyServerCert = true
-# For real-world Splunk Cloud, you'll typically get the correct server name/port
-# from your Splunk Cloud "Forwarder" credentials page.
-
-[serverClass:default]
-stateOnClient = enabled
-"@
-
-$outputsConf = Join-Path $LocalConfigPath "outputs.conf"
-
-Write-Host "Configuring $outputsConf with sample forwarding configuration..."
-try {
-    # If an existing outputs.conf exists, back it up
-    if (Test-Path $outputsConf) {
-        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-        $backupPath = "$outputsConf.$timestamp.bak"
-        Copy-Item $outputsConf $backupPath -Force
-        Write-Host "Existing outputs.conf backed up to: $backupPath"
-    }
+    [string]$SplunkMsiDownloadUrl = "https://download.splunk.com/products/universalforwarder/releases/9.4.0/windows/splunkforwarder-9.4.0-6b4ebe426ca6-windows-x64.msi",
+    [string]$SplunkMsiPath        = "$env:TEMP\splunkforwarder-9.4.0-x64-release.msi",
+    [string]$SplunkAdminUser      = "sc_admin",
+    [string]$SplunkAdminPassword  = "nixceh-Tacper-3poqro",
+    [string]$InstallDir           = "C:\Program Files\SplunkUniversalForwarder",
     
-    # Write new config (or overwrite old)
-    $outputsConfContent | Out-File -FilePath $outputsConf -Encoding UTF8
-    Write-Host "`n----- Updated outputs.conf -----"
-    Get-Content $outputsConf
+    # Adjust these if you want Splunk-to-Splunk (S2S) forwarding directly to Splunk Cloud
+    [string]$ReceivingIndexer     = "prd-p-pgr0a.splunkcloud.com:9997",
+    
+    # If you prefer HEC-based forwarding instead, fill in these:
+    [string]$HecToken             = "13004da6-afa7-4fd9-b233-f6f27bce830b",
+    [string]$HecUrl               = "https://prd-p-pgr0a.splunkcloud.com:8088",
+
+    # Toggle whether you want to enable Windows Security/System logs via MSI flags
+    [switch]$EnableWinEventLogs
+)
+
+Write-Host "=== Downloading Splunk Universal Forwarder MSI ==="
+Write-Host "From: $SplunkMsiDownloadUrl"
+Write-Host "To:   $SplunkMsiPath"
+try {
+    Invoke-WebRequest -Uri $SplunkMsiDownloadUrl -OutFile $SplunkMsiPath -UseBasicParsing
 }
 catch {
-    Write-Warning "Failed to write outputs.conf. Error: $_"
+    Write-Error "Failed to download the Splunk UF MSI. $_"
+    exit 1
 }
 
-###############################################################################
-# 5. Restart SplunkForwarder service to load new configuration
-###############################################################################
-Write-Host "`nRestarting SplunkForwarder service to apply changes..."
+# Construct our MSI install arguments
+# These are the basic flags; you can add or remove based on your needs.
+# More flags documented at:
+#   https://docs.splunk.com/Documentation/Forwarder/latest/Forwarder/InstallaWindowsuniversalforwarderfromthecommandline
+
+$msiArgs = @(
+    "/i `"$SplunkMsiPath`""                       # Path to the downloaded MSI
+    "INSTALLDIR=`"$InstallDir`""                  # Where to install Splunk UF
+    "AGREETOLICENSE=Yes"                          # Required for silent install
+    "SPLUNKUSERNAME=$SplunkAdminUser"             # Initial admin user (UF local GUI/CLI)
+    "SPLUNKPASSWORD=$SplunkAdminPassword"         # Initial password
+    
+    # If you want to forward directly to Splunk Cloud on port 9997:
+    "RECEIVING_INDEXER=`"$ReceivingIndexer`""     
+
+    # Optionally enable Windows Event logs at install time
+    # (If $EnableWinEventLogs is set, we enable Security & System logs as an example)
+    $(if ($EnableWinEventLogs) {"WINEVENTLOG_SEC_ENABLE=1"; "WINEVENTLOG_SYS_ENABLE=1"})
+
+    # Run silently with no UI
+    "/quiet"
+)
+
+Write-Host "=== Installing Splunk Universal Forwarder Silently ==="
+Write-Host "Running: msiexec.exe $($msiArgs -join ' ')"
 try {
-    # Stop the service if it’s running
-    if (Get-Service SplunkForwarder -ErrorAction SilentlyContinue) {
-        Stop-Service SplunkForwarder -Force
-        Start-Sleep -Seconds 3
-        Start-Service SplunkForwarder
-        Write-Host "SplunkForwarder service restarted successfully."
+    $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru
+    if ($process.ExitCode -ne 0) {
+        Write-Error "Splunk UF installation failed with exit code $($process.ExitCode)"
+        exit $process.ExitCode
+    }
+}
+catch {
+    Write-Error "Failed to start msiexec.exe for Splunk UF installation. $_"
+    exit 1
+}
+
+Write-Host "`n=== Splunk Universal Forwarder Installed Successfully ==="
+Write-Host "Install path: $InstallDir"
+
+# --------------------------------------------------------------------------
+# OPTIONAL STEP: Configure HTTP Event Collector (HEC) forwarding
+# Note: This is *not* the typical method for a universal forwarder, because
+#       forwarders usually send data via Splunk-to-Splunk (S2S) on port 9997.
+#       However, if you do need HEC-based forwarding, you can drop an outputs.conf
+#       that points to your Splunk Cloud HEC endpoint and references your token.
+# --------------------------------------------------------------------------
+$UseHec = $true  # <-- Toggle this if you actually want to use HEC forwarding
+if ($UseHec) {
+    Write-Host "`n=== Writing outputs.conf for HEC Forwarding ==="
+    $OutputsConfPath = Join-Path -Path $InstallDir -ChildPath "etc\system\local\outputs.conf"
+    
+    # Basic example of an outputs.conf for HEC. Adjust as necessary.
+    # This config:
+
+    #   [httpout]
+    #   disabled = 0
+    #   httpEventCollectorToken = <token>
+
+    #   [httpout:my_hec_target]
+    #   server = <URL or Host>:<Port>
+    #   useSSL = true
+
+    $outputsConfContent = @"
+[httpout]
+disabled = 0
+httpEventCollectorToken = $HecToken
+
+[httpout:my_hec_target]
+server = $HecUrl
+useSSL = true
+"@
+    try {
+        $outputsConfContent | Out-File -FilePath $OutputsConfPath -Encoding UTF8
+        Write-Host "Created/updated $OutputsConfPath with HEC settings."
+    }
+    catch {
+        Write-Error "Failed to write to $OutputsConfPath. $_"
+    }
+
+    # Restart the UF so the new config takes effect
+    $splunkBin = Join-Path -Path $InstallDir -ChildPath "bin\splunk.exe"
+    if (Test-Path $splunkBin) {
+        Write-Host "`n=== Restarting the Splunk Universal Forwarder to load HEC config ==="
+        & "$splunkBin" stop
+        & "$splunkBin" start
+        Write-Host "Splunk UF restarted."
     }
     else {
-        Write-Host "SplunkForwarder service not found; it may not have been installed correctly."
+        Write-Error "Could not find Splunk executable at $splunkBin"
     }
 }
-catch {
-    Write-Warning "Could not restart SplunkForwarder service. Error: $_"
+else {
+    Write-Host "`nNo HEC forwarding configured (using Splunk-to-Splunk or no forwarding)."
 }
 
-Write-Host "`n===== Splunk Universal Forwarder installation and configuration is complete! ====="
-Write-Host "Token (if using HEC): $Token"
-Write-Host "Splunk Cloud URL:     $Url"
-Write-Host "Logs URL (HEC):       $LogsUrl"
+Write-Host "`n=== Done! ==="
