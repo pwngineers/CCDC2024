@@ -1,3 +1,9 @@
+# NOTES
+# Working on:
+# Mac OS : Checked and working!
+# Windows: Needs to be checked
+# Ubuntu : Needs to be checked
+
 import pyperclip
 from pynput.keyboard import Key, Listener, Controller
 import time
