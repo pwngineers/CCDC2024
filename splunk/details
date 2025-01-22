@@ -8,5 +8,6 @@ Windows install:
 1) Open powershell
 2) Run: Set-ExecutionPolicy Unrestricted
 3) Download https://github.com/pwngineers/CCDC2024/archive/refs/heads/main.zip
-4) Unzip. 
-5) Run splunk/install_windows.ps1
+4) wget https://raw.githubusercontent.com/pwngineers/CCDC2024/refs/heads/main/splunk/install_windows.ps1
+5) Unzip. 
+6) Run splunk/install_windows.ps1
