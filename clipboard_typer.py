@@ -102,4 +102,15 @@ def on_press(key):
     # Detect sequences
     if past_keys == '???':
         print('--- Retrieving from Clipboard ---')
-        time.sleep
+        time.sleep(1)
+        text = pyperclip.paste()
+        type_response(text)
+        past_keys = ''
+
+def main():
+    # Start the listener
+    with Listener(on_press=on_press) as listener:
+        listener.join()
+
+if __name__ == "__main__":
+    main()
