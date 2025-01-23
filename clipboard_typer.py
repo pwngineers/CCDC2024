@@ -1,7 +1,7 @@
 # NOTES
 # Working on:
 # Mac OS : Checked and working!
-# Windows: Needs to be checked
+# Windows: hecked and working!
 # Ubuntu : Needs to be checked
 
 import pyperclip
