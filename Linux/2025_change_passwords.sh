@@ -2,6 +2,11 @@
 
 # From BYU
 
+# Script to change passwords for all non-system users on a Linux system.
+# Checks for root privileges before execution.
+# Prompts for new password input and confirmation, ensuring they match before applying changes.
+# Excludes system accounts and the "nobody" user from the password update.
+
 # Check if the script is run as root
 if [ "$EUID" -ne 0 ]; then
   echo "This script must be run as root."

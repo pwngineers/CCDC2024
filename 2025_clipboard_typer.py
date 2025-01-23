@@ -6,6 +6,22 @@
 
 # Nate (Created Winter 2025)
 
+# How to use:
+# 1. Install the required libraries: `pyperclip` and `pynput`. You can install them using pip:
+#    ```bash
+#    pip install pyperclip pynput
+#    ```
+# 2. Run the script:
+#    ```bash
+#    python clipboard_manager.py
+#    ```
+# 3. Use the following hotkeys to interact with the clipboard manager:
+#    - **>>>** (Triple greater than sign): Start "recording" text typed on the keyboard.
+#    - **<<<** (Triple less than sign): Send the "recorded" text to ChatGPT. (This functionality is not implemented yet)
+#    - **???** (Triple question mark): Retrieve text from the clipboard and send it to ChatGPT.
+#    - **#** (Hash key): Take a screenshot, perform OCR (Optical Character Recognition), and send the extracted text to ChatGPT. (This functionality is not implemented yet)
+
+
 import pyperclip
 from pynput.keyboard import Key, Listener, Controller
 import time
@@ -67,14 +83,6 @@ def type_response(answer):
         time.sleep(0.01)  # Add delay for natural typing
 
 def on_press(key):
-    """
-    This function is called whenever a key is pressed.
-    We check for certain sequences:
-    '>>>' => Start "recording"
-    '<<<' => Send to ChatGPT
-    '???' => Retrieve from clipboard and send
-    '#'   => Take screenshot, perform OCR
-    """
     global key_strokes, past_keys
 
     # Ignore shift, alt, cmd, arrow keys, etc.

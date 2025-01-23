@@ -2,6 +2,24 @@
 
 # Xander (Created Winter 2025)
 
+# Debian CCDC Auto-Setup Script
+#
+# DESCRIPTION:
+# Automated user creation and system configuration for Debian-based systems
+#
+# FEATURES:
+# - Interactive user account creation
+# - Network gateway configuration
+# - User password management
+#
+# WARNINGS:
+# - Requires root permissions
+# - Modifies network and user settings
+# - Potential system configuration changes
+#
+# USAGE:
+# Run with root privileges on Debian systems
+
 error() {
 	# Log to stderr and exit with failure.
 	printf "%s\n" "$1" >&2
