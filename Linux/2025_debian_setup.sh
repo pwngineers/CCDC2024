@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Xander (Created Winter 2025)
+
 error() {
 	# Log to stderr and exit with failure.
 	printf "%s\n" "$1" >&2

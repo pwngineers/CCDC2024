@@ -1,3 +1,6 @@
+
+# Nate (Created Winter 2025)
+
 <#
     .SYNOPSIS
         Installs the Splunk Universal Forwarder on Windows silently.

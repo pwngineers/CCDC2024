@@ -4,6 +4,8 @@
 # Windows: hecked and working!
 # Ubuntu : Needs to be checked
 
+# Nate (Created Winter 2025)
+
 import pyperclip
 from pynput.keyboard import Key, Listener, Controller
 import time

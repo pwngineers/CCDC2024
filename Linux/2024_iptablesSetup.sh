@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Khai (Created Winter 2024)
 
 # Script for setting up basic security for linux servers using iptables 
 # DEBIAN systems only!
