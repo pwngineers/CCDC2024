@@ -75,13 +75,13 @@ print "logging"
 /sbin/iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP  
 
 ### 4: Block packets with bogus TCP flags ### 
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
-/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+#/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
 
 ### 5: Block spoofed packets ### 
 /sbin/iptables -t mangle -A PREROUTING -s 224.0.0.0/3 -j DROP 
@@ -93,9 +93,6 @@ print "logging"
 /sbin/iptables -t mangle -A PREROUTING -s 0.0.0.0/8 -j DROP 
 /sbin/iptables -t mangle -A PREROUTING -s 240.0.0.0/5 -j DROP 
 /sbin/iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP  
-
-### 6: Drop ICMP (you usually don't need this protocol) ### 
-/sbin/iptables -t mangle -A PREROUTING -p icmp -j DROP  
 
 ### 7: Drop fragments in all chains ### 
 /sbin/iptables -t mangle -A PREROUTING -f -j DROP  
