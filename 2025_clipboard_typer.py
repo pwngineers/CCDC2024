@@ -70,6 +70,7 @@ shift_map = {
     '}': ']',
     '|': '\\',
     '~': '`',
+    '*': '8',
 }
 
 def type_response(answer):
@@ -80,7 +81,10 @@ def type_response(answer):
         time.sleep(0.1)  # Add a slight delay to mimic natural typing
 
     for char in answer:
-        if char.isupper() or char in shift_map:  # Handle Shift key for uppercase and special chars
+        if char == '\n':  # Handle newlines
+            keyboard.press(Key.enter)
+            keyboard.release(Key.enter)
+        elif char.isupper() or char in shift_map:  # Handle Shift key for uppercase and special chars
             keyboard.press(Key.shift)
             if char in shift_map:
                 keyboard.press(shift_map[char])  # Type corresponding shifted character
