@@ -5,6 +5,15 @@ LOGFILE="/logs/phase1_step4.log"
 BACKUP_DIR="/backup/initial"
 AUDIT_RULES_FILE="/etc/audit/rules.d/cadia.rules"
 
+LOGDIR="$(dirname "$LOGFILE")"
+if [[ ! -d "$LOGDIR" ]]; then
+    mkdir -p "$LOGDIR"
+fi
+
+if [[ ! -f "$LOGFILE" ]]; then
+    touch "$LOGFILE"
+fi
+
 echo "[*] Starting backup and monitoring setup at $(date)" | tee -a "$LOGFILE"
 mkdir -p "$BACKUP_DIR"
 
