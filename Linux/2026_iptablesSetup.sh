@@ -14,10 +14,10 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p icmp -j ACCEPT
 
 # Services
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT   # SSH
-iptables -A INPUT -p tcp --dport 25 -j ACCEPT   # SMTP
-iptables -A INPUT -p tcp --dport 110 -j ACCEPT  # POP3
-# iptables -A INPUT -p tcp --dport 80 -j ACCEPT # HTTP
+# iptables -A INPUT -p tcp --dport 22 -j ACCEPT   # SSH
+# iptables -A INPUT -p tcp --dport 25 -j ACCEPT   # SMTP
+# iptables -A INPUT -p tcp --dport 110 -j ACCEPT  # POP3
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT # HTTP
 
 # Port scan detection chain
 iptables -N LOG_AND_DROP
