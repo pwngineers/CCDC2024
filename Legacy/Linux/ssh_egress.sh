@@ -9,8 +9,6 @@ STATE_FILE="/var/tmp/ssh_egress_state"
 # Whitelist format:
 # CIDR_or_IP:PORT
 WHITELIST=(
-  "192.168.0.0/16:22"
-  "10.0.0.5:2222"
 )
 
 # ----------------------------------------
